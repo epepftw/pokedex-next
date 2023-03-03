@@ -1,11 +1,43 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from '@/styles/Home.module.css'
+import Card from "@/components/Card";
+import Head from "next/head";
+import Link from "next/link";
+import { useState } from "react";
 
-const inter = Inter({ subsets: ['latin'] })
+interface Pokemon {
+  name: string;
+  url: string;
+}
 
-export default function Home() {
+interface PokemonArray {
+  results: Pokemon[];
+}
+
+export async function getServerSideProps() {
+  const res = await fetch(
+    "https://pokeapi.co/api/v2/pokemon?limit=24&offset=0"
+  );
+  const data: PokemonArray = await res.json();
+
+  return {
+    props: {
+      pokemon: data,
+    },
+  };
+}
+
+export default function Home({ pokemon }: { pokemon: PokemonArray }) {
+  const [pokemonList, setPokemonList] = useState<Pokemon[]>(pokemon.results);
+  const [limit, setLimit] = useState(20);
+
+  const handleSeeMoreClick = async () => {
+    const res = await fetch(
+      `https://pokeapi.co/api/v2/pokemon?limit=8&offset=${limit}`
+    );
+    const data: PokemonArray = await res.json();
+    setLimit((prevLimit) => prevLimit + 8);
+    setPokemonList((prevPokemonList) => prevPokemonList.concat(data.results));
+  };
+
   return (
     <>
       <Head>
@@ -14,110 +46,27 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main}>
-        <div className={styles.description}>
-          <p>
-            Get started by editing&nbsp;
-            <code className={styles.code}>src/pages/index.tsx</code>
-          </p>
-          <div>
-            <a
-              href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              By{' '}
-              <Image
-                src="/vercel.svg"
-                alt="Vercel Logo"
-                className={styles.vercelLogo}
-                width={100}
-                height={24}
-                priority
-              />
-            </a>
+      <main>
+        <div className="flex flex-col justify-center">
+          <div className="flex justify-center">
+            <div className="flex flex-wrap justify-center w-[1440px]">
+              {pokemonList?.length === 0 ? (
+                <div>Loading...</div>
+              ) : (
+                pokemonList?.map((pokemon) => (
+                  <Card key={pokemon.name} pokemon={pokemon} />
+                ))
+              )}
+            </div>
           </div>
-        </div>
-
-        <div className={styles.center}>
-          <Image
-            className={styles.logo}
-            src="/next.svg"
-            alt="Next.js Logo"
-            width={180}
-            height={37}
-            priority
-          />
-          <div className={styles.thirteen}>
-            <Image
-              src="/thirteen.svg"
-              alt="13"
-              width={40}
-              height={31}
-              priority
-            />
-          </div>
-        </div>
-
-        <div className={styles.grid}>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            className="bg-blue-300 w-[150px] m-auto mb-5"
+            onClick={handleSeeMoreClick}
           >
-            <h2 className={inter.className}>
-              Docs <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Find in-depth information about Next.js features and&nbsp;API.
-            </p>
-          </a>
-
-          <a
-            href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Learn <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Learn about Next.js in an interactive course with&nbsp;quizzes!
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Templates <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Discover and deploy boilerplate example Next.js&nbsp;projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Deploy <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Instantly deploy your Next.js site to a shareable URL
-              with&nbsp;Vercel.
-            </p>
-          </a>
+            See more.
+          </button>
         </div>
       </main>
     </>
-  )
+  );
 }
