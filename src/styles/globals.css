@@ -1,3 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: "Pocketmon";
+  src: url("/fonts/PocketMonk.ttf") format("truetype");
+}
+
+body {
+  background: linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.7)),
+    url("../../public/bg.jpg");
+  background-attachment: fixed;
+  background-size: cover;
+  color: #fff;
+  background-color: #1a202c;
+}
+
+.pokefont {
+  font-family: "Pocketmon", sans-serif;
+  color: #ffde00;
+  -webkit-text-stroke: 0.5px #cc0000;
+  letter-spacing: 2px;
+}

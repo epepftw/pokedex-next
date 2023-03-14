@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import CardImg from "./CardImg";
+import CardInfo from "./CardInfo";
 
 interface Pokemon {
   name: string;
@@ -59,55 +61,22 @@ export default function Card({ pokemon }: { pokemon: Pokemon }) {
     fairy: "bg-gradient-to-br from-pink-300 to-purple-300",
   };
 
-  const typeToEmoji: { [key: string]: string } = {
-    normal: "🌀",
-    fire: "🔥",
-    water: "💧",
-    grass: "🍃",
-    flying: "🦅",
-    fighting: "👊🏾",
-    poison: "☠",
-    electric: "⚡",
-    ground: "🌋",
-    rock: "🧱",
-    psychic: "🔮",
-    ice: "❄",
-    bug: "🦗",
-    ghost: "👻",
-    steel: "🕋",
-    dragon: "🐲",
-    dark: "🌑",
-    fairy: "🧚🏻‍♀️",
-  };
-
   return (
     <div
-      className={`px-2 py-5 w-[300px] text-center m-2 rounded-md ${
+      className={`px-2 py-5 w-[300px] relative overflow-hidden text-center m-2 rounded-md ${
         typeToColor[type] || "bg-gray-400"
       } text-white`}
     >
-      <h2 className="text-lg font-bold">{pokemon?.name.toUpperCase()}</h2>
+      <img
+        className="absolute w-[300px] z-0 top-[50px] left-[150px] opacity-70"
+        src="logo.png"
+        alt=""
+      />
+      <h2 className="text-lg font-bold z-100">{pokemon?.name.toUpperCase()}</h2>
       {pokemonData && (
-        <div className="flex justify-center text-start">
-          <div>
-            <p>Weight: {pokemonData.weight}</p>
-            <p>Height: {pokemonData.height}</p>
-            <p>Types:</p>
-            <ul>
-              {pokemonData.types.map((type) => (
-                <li className="font-semibold" key={type.type.name}>
-                  {typeToEmoji[type.type.name]}{" "}
-                  {type.type.name.charAt(0).toUpperCase() +
-                    type.type.name.slice(1)}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <img
-            className="h-[100%]"
-            src={pokemonData.sprites.front_default}
-            alt={pokemon.name}
-          />
+        <div className="flex justify-center text-start z-20">
+          <CardInfo pokemonData={pokemonData} />
+          <CardImg pokemonData={pokemonData} pokemon={pokemon} />
         </div>
       )}
     </div>
